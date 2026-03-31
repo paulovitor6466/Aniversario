@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Happy Birthday</title>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial}
+
+body{
+  background:black;
+  color:white;
+  overflow:hidden;
+}
+
+/* TELAS */
+.screen{
+  position:absolute;
+  inset:0;
+  display:none;
+  justify-content:center;
+  align-items:center;
+  flex-direction:column;
+}
+
+.active{display:flex;}
+
+button{
+  margin-top:20px;
+  padding:12px 30px;
+  border:none;
+  border-radius:20px;
+  cursor:pointer;
+  z-index:2;
+}
+
+/* INTRO */
+#intro{
+  background:linear-gradient(135deg,#ff7eb3,#ff4f81);
+}
+
+/* MATRIX */
+#rain canvas{
+  position:absolute;
+  top:0;
+  left:0;
+  z-index:0;
+  pointer-events:none; /* ESSENCIAL */
+}
+
+/* VIDEO */
+video{
+  width:260px;
+  border-radius:15px;
+}
+
+/* FOTO */
+.polaroid{
+  background:white;
+  padding:15px 15px 60px;
+  border-radius:10px;
+  transform:rotate(-2deg);
+}
+
+.polaroid img{
+  width:250px;
+}
+
+.polaroid-text{
+  color:black;
+  text-align:center;
+}
+
+/* CARTA */
+.letter{
+  max-width:500px;
+  background:rgba(255,255,255,0.1);
+  padding:20px;
+  border-radius:15px;
+}
+</style>
+</head>
+
+<body>
+
+<!-- INTRO -->
+<section id="intro" class="screen active">
+  <h1>Happy Birthday 🎉</h1>
+  <button onclick="startRain()">next</button>
+</section>
+
+<!-- CHUVA MATRIX -->
+<section id="rain" class="screen">
+  <canvas id="matrix"></canvas>
+  <button onclick="showVideo()">next</button>
+</section>
+
+<!-- VIDEO -->
+<section id="video" class="screen">
+  <h2>🎵 Música</h2>
+  <video src="video.mp4" controls autoplay loop></video>
+  <button onclick="showPhoto()">next</button>
+</section>
+
+<!-- FOTO -->
+<section id="photo" class="screen">
+  <div class="polaroid">
+    <img src="foto.jpg">
+    <div class="polaroid-text">📸 Momentos especiais</div>
+  </div>
+  <button onclick="showFinal()">next</button>
+</section>
+
+<!-- CARTA -->
+<section id="final" class="screen">
+  <div class="letter">
+    <h2>Feliz Aniversário ✨</h2>
+    <p>
+      Você é uma pessoa incrível e cheia de luz, obrigado por proporcionar vários momentos com você,
+      que essa nova fase seja cheia de sonhos realizados e muita felicidade e muito amor,
+      você é uma garota maravilhosa, obrigada pelos momentos inesquecíveis.
+    </p>
+  </div>
+</section>
+
+<script>
+const screens = document.querySelectorAll('.screen');
+
+function show(id){
+  screens.forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+/* MATRIX */
+let interval;
+
+function startRain(){
+  show('rain');
+  startMatrix();
+}
+
+function startMatrix(){
+
+  const canvas = document.getElementById("matrix");
+  const ctx = canvas.getContext("2d");
+
+  canvas.height = window.innerHeight;
+  canvas.width = window.innerWidth;
+
+  const letters = "HAPPYBIRTHDAY";
+  const fontSize = 20;
+  const columns = canvas.width / fontSize;
+
+  const drops = [];
+
+  for(let x = 0; x < columns; x++){
+    drops[x] = 1;
+  }
+
+  function draw(){
+
+    ctx.fillStyle = "rgba(0,0,0,0.05)";
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+
+    ctx.fillStyle = "red";
+    ctx.font = fontSize + "px monospace";
+
+    for(let i = 0; i < drops.length; i++){
+
+      const text = letters[Math.floor(Math.random()*letters.length)];
+
+      ctx.fillText(text, i*fontSize, drops[i]*fontSize);
+
+      if(drops[i]*fontSize > canvas.height && Math.random() > 0.975){
+        drops[i] = 0;
+      }
+
+      drops[i]++;
+    }
+  }
+
+  interval = setInterval(draw, 33);
+}
+
+/* TROCA DE TELAS */
+function showVideo(){
+  clearInterval(interval);
+  show('video');
+}
+
+function showPhoto(){show('photo')}
+
+function showFinal(){
+  show('final');
+  document.body.style.overflow='auto';
+}
+</script>
+
+</body>
+</html>
